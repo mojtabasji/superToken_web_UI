@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+SuperTokens Admin Web UI (Open Source)
+=====================================
 
-## Getting Started
+Minimal admin UI to view and manage users and tenants from a self-hosted SuperTokens Core, with a simple env-based admin login.
 
-First, run the development server:
+What it does
+------------
+- Reads Core connection from environment: `CORE_URL`, `CORE_API_KEY` (optional), `CORE_CDI_VERSION` (optional)
+- Simple admin auth using `ADMIN_USERNAME` and `ADMIN_PASSWORD`
+- Lists users with pagination and allows deleting a user
+- Lists tenants
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Getting started
+---------------
+1. Copy `.env.local.example` to `.env.local` and set values
+2. Install dependencies
+3. Run the dev server
+
+Required environment
+--------------------
+See `.env.local.example`:
+
+```
+CORE_URL=http://localhost:3567
+CORE_API_KEY=
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=change-me
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Scripts
+-------
+- `pnpm dev` or `npm run dev` to start development server
+- `pnpm build` / `pnpm start` or `npm run build` / `npm start` to build & run
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Security notes
+--------------
+- This UI uses a signed HTTP-only cookie to keep an admin session for 2 hours.
+- For production, use HTTPS and a strong `ADMIN_PASSWORD`. Consider adding a dedicated secret.
+- Ensure the app is not exposed to the public Internet without proper access control.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+License
+-------
+Apache-2.0 or MIT (choose and update accordingly).
 
-## Learn More
+Contributing
+------------
+We’d love your help making this Admin UI better for the community.
 
-To learn more about Next.js, take a look at the following resources:
+- Star the repo to show support and help others discover it.
+- Open issues for bugs, feature requests, or documentation gaps.
+- Submit pull requests for fixes, improvements, and new features.
+- Share feedback on UX, APIs, and Core compatibility—especially across different CDI versions.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Development workflow
+--------------------
+- Fork and clone the repository
+- Create a branch for your change (e.g. `feat/add-tenant-settings`)
+- Ensure `npm run dev` works locally (see Required environment)
+- Add tests or minimal verification steps where possible
+- Open a PR; include a short description and screenshots when relevant
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Good first issues (ideas)
+-------------------------
+- Add filters / search to the Users list
+- Show user details (recipes, emails, sessions)
+- Add session management (list/kill sessions)
+- Tenant details page (recipes enabled, email settings)
+- Improve Core health diagnostics (CDI/version reporting)
 
-## Deploy on Vercel
+Community & support
+-------------------
+- Discussions: enable GitHub Discussions or use Issues for Q&A
+- Security: please report vulnerabilities privately before opening an issue
+- Contact: add your preferred contact method (Discord, email, etc.)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

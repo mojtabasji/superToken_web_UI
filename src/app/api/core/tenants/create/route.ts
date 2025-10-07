@@ -7,16 +7,18 @@ export async function POST(req: NextRequest) {
   const ok = await requireAdmin();
   if (!ok) return errorJson("Unauthorized", 401);
   const body = await req.json().catch(() => ({}));
-  const { tenantId } = body as { tenantId?: string };
+  const { tenantId, appId } = body as { tenantId?: string; appId?: string };
   if (!tenantId || tenantId.trim().length === 0) return errorJson("tenantId is required", 400);
   try {
     // Newer endpoint shape
     try {
-      const res = await coreFetch("/tenants", { method: "POST", body: { tenantId } });
+      const path = appId ? `/apps/${encodeURIComponent(appId)}/tenants` : "/tenants";
+      const res = await coreFetch(path, { method: "POST", body: { tenantId } });
       return json(res, 201);
     } catch {
       // Older endpoint shape
-      const res = await coreFetch("/multitenancy/tenant", { method: "POST", body: { tenantId } });
+      const path = appId ? `/multitenancy/app/${encodeURIComponent(appId)}/tenant` : "/multitenancy/tenant";
+      const res = await coreFetch(path, { method: "POST", body: { tenantId } });
       return json(res, 201);
     }
   } catch (e: unknown) {

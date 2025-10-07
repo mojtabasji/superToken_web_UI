@@ -31,12 +31,26 @@ Scripts
 -------
 - `pnpm dev` or `npm run dev` to start development server
 - `pnpm build` / `pnpm start` or `npm run build` / `npm start` to build & run
+- `npm run dashboard` to start the standalone SuperTokens Dashboard server (Express)
 
 Security notes
 --------------
 - This UI uses a signed HTTP-only cookie to keep an admin session for 2 hours.
 - For production, use HTTPS and a strong `ADMIN_PASSWORD`. Consider adding a dedicated secret.
 - Ensure the app is not exposed to the public Internet without proper access control.
+
+SuperTokens Dashboard (optional)
+--------------------------------
+This repo includes a small Express server that runs the official SuperTokens Dashboard recipe connected to your self-hosted Core.
+
+- Configure in `.env.local`:
+	- `CORE_URL` and optional `CORE_API_KEY`
+	- `DASHBOARD_PORT` (default `3434`)
+	- `DASHBOARD_API_KEY` (required; set a strong value)
+- Start it with `npm run dashboard` and open:
+	- `http://localhost:3434/auth/dashboard` (actual mounted path)
+	- `http://localhost:3434/dashboard` also works (we redirect to the above)
+	The dashboard is protected by the API key and will prompt for it in the UI.
 
 License
 -------

@@ -3,16 +3,18 @@ import { coreFetch } from "@/lib/coreClient";
 import { errorJson, json } from "@/lib/responses";
 import { requireAdmin } from "@/lib/auth";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const ok = await requireAdmin();
     if (!ok) return errorJson("Unauthorized", 401);
+    const url = new URL(req.url);
+    const appId = url.searchParams.get("appId") || undefined;
     try {
-      const data = await coreFetch("/tenants");
+      const data = await coreFetch(appId ? `/apps/${encodeURIComponent(appId)}/tenants` : "/tenants");
       return json(data);
     } catch (e) {
       try {
-        const data = await coreFetch("/multitenancy/tenants");
+        const data = await coreFetch(appId ? `/multitenancy/apps/${encodeURIComponent(appId)}/tenants` : "/multitenancy/tenants");
         return json(data);
       } catch (e2) {
         const msg = (e2 instanceof Error ? e2.message : (e instanceof Error ? e.message : "Core error")) || "Core error";

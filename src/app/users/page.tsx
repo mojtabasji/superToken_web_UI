@@ -134,7 +134,10 @@ export default function UsersPage() {
                 <td className="p-2 font-mono text-xs">{u.userId}</td>
                 <td className="p-2">{u.emails?.[0] ?? "-"}</td>
                 <td className="p-2 text-right">
-                  <button className="h-8 px-2 rounded bg-red-600 text-white" onClick={() => del(u.userId)}>Delete</button>
+                  <div className="flex gap-2 justify-end">
+                    <Link className="h-8 px-2 rounded border flex items-center" href={`/users/${encodeURIComponent(u.userId)}`}>View</Link>
+                    <button className="h-8 px-2 rounded bg-red-600 text-white" onClick={() => del(u.userId)}>Delete</button>
+                  </div>
                 </td>
               </tr>
             ))}

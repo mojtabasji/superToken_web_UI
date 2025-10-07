@@ -18,6 +18,8 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      // Ignore the Node-based Dashboard server (uses CommonJS require)
+      "server/**",
     ],
   },
 ];

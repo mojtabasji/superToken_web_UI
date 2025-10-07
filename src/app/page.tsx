@@ -35,6 +35,7 @@ export default function Home() {
 
       <section className="flex gap-4">
         <Link className="h-10 px-4 rounded border flex items-center" href="/users">Users</Link>
+        <Link className="h-10 px-4 rounded border flex items-center" href="/apps">Apps</Link>
         <Link className="h-10 px-4 rounded border flex items-center" href="/tenants">Tenants</Link>
         <Link className="h-10 px-4 rounded border flex items-center" href="/settings">Settings</Link>
       </section>

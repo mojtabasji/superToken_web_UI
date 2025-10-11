@@ -19,6 +19,18 @@ process.on("uncaughtException", (err) => {
   console.error("[dashboard-server] Uncaught exception:", err);
 });
 
+// Optional: relax TLS for Core in dev when using self-signed certs
+try {
+  if (String(process.env.CORE_INSECURE_TLS).toLowerCase() === "true") {
+    const undici = require("undici");
+    const agent = new undici.Agent({ connect: { rejectUnauthorized: false } });
+    undici.setGlobalDispatcher(agent);
+    console.warn("[dashboard-server] CORE_INSECURE_TLS=true — TLS verification disabled for Core calls (DEV ONLY)");
+  }
+} catch (e) {
+  console.warn("[dashboard-server] Unable to set insecure TLS agent:", e);
+}
+
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -173,41 +185,23 @@ app.use((req, res, next) => {
 app.use(middleware());
 app.use(errorHandler());
 
-function startServer(port, attempts = 3) {
-  try {
-    const server = app.listen(port, () => {
-      console.log(`[dashboard-server] PID ${process.pid}`);
-      console.log(`SuperTokens Dashboard running at:`);
-      console.log(`  - http://localhost:${port}/auth/dashboard (actual mounted path)`);
-      console.log(`  - http://localhost:${port}/dashboard (redirects to the above)`);
-    });
-    server.on("error", (err) => {
-      if (err && (err.code === "EADDRINUSE" || err.code === "EACCES")) {
-        console.error(`[dashboard-server] Port ${port} unavailable (${err.code}).`);
-        if (attempts > 0) {
-          const nextPort = port + 1;
-          console.log(`[dashboard-server] Retrying on port ${nextPort}... (${attempts - 1} attempts left)`);
-          startServer(nextPort, attempts - 1);
-        } else {
-          console.error(`[dashboard-server] Failed to bind to a port. Exiting.`);
-          process.exit(1);
-        }
-      } else {
-        console.error(`[dashboard-server] Server error:`, err);
-      }
-    });
-
-    // Heartbeat to avoid idle exits and provide a periodic liveness log in some environments
-    setInterval(() => {
-      if (server.listening) {
-        // Uncomment for periodic logs:
-        // console.log("[dashboard-server] heartbeat alive");
-      }
-    }, 300000); // 5 minutes
-  } catch (err) {
-    console.error(`[dashboard-server] Fatal error during start:`, err);
-    process.exit(1);
-  }
+try {
+  const server = app.listen(DASHBOARD_PORT, () => {
+    console.log(`[dashboard-server] PID ${process.pid}`);
+    console.log(`SuperTokens Dashboard running at:`);
+    console.log(`  - http://localhost:${DASHBOARD_PORT}/auth/dashboard (actual mounted path)`);
+    console.log(`  - http://localhost:${DASHBOARD_PORT}/dashboard (redirects to the above)`);
+  });
+  server.on("error", (err) => {
+    if (err && (err.code === "EADDRINUSE" || err.code === "EACCES")) {
+      console.error(`[dashboard-server] Port ${DASHBOARD_PORT} unavailable (${err.code}). Set DASHBOARD_PORT in .env.local to a free port and restart.`);
+      process.exit(1);
+    }
+    console.error(`[dashboard-server] Server error:`, err);
+  });
+  // Optional lightweight heartbeat log every 5 minutes (disabled)
+  setInterval(() => { /* noop */ }, 300000);
+} catch (err) {
+  console.error(`[dashboard-server] Fatal error during start:`, err);
+  process.exit(1);
 }
-
-startServer(DASHBOARD_PORT);
